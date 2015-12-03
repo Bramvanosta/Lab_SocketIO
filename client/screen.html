@@ -1,0 +1,79 @@
+<!Doctype html>
+<html lang="en" ng-app>
+  <head>
+    <title>Chat Example</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/style.css" type="text/css" />
+    <body>
+        
+    <div id="canvascontainer">
+        
+    </div>
+    
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      document.body.onload=function() {
+        var socket = io.connect();
+
+        var listPlayers = [];
+
+        socket.on('connect', function () {
+          console.log("Hello ma gueule");
+          socket.emit('screen',"je suis screen");
+        });
+
+        
+        socket.on('listPlayers', function (players) {
+         listPlayers = players;
+         console.log(players);
+        });
+        
+        socket.on('start', function (players) {
+          for(var x in players)
+          {
+              var divCanvas=document.createElement("div");
+              divCanvas.className="canvascontainer";
+              
+              var canvas=document.createElement("canvas");
+              canvas.id=players[x].id;
+              canvas.width=window.screen.width;
+              canvas.height=window.screen.height/players.length;
+              canvas.style.backgroundColor=getRandomColor();
+              
+              var namespan=document.createElement('span');
+              namespan.className="nameplayer";
+              
+              var textNode=document.createTextNode(players[x].name)
+              namespan.appendChild(textNode);
+              
+              divCanvas.appendChild(canvas);
+              divCanvas.appendChild(namespan);
+              
+              canvascontainer.appendChild(divCanvas);
+          }
+        });
+        
+        function getRandomColor() {
+            var letters = '0123456789ABCDEF'.split('');
+            var color = '#';
+            for (var i = 0; i < 6; i++ ) {
+                color += letters[Math.floor(Math.random() * 16)];
+            }
+            return color;
+        }
+        
+        socket.on('newPlayer', function (players) {
+            listPlayers = players;
+            console.log(players);
+        });
+
+      }
+    </script>
+    </body>
+  </head>
+  <body>
+
+  
+  
+  </body>
+</html>

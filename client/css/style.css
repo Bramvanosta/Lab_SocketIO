@@ -1,0 +1,26 @@
+body{
+    padding: 0 !important;
+    margin:0px;
+}
+#canvasPlayer{
+    background-color: black;
+    display: none;
+}
+canvas{
+    padding:0px;
+    margin:0px;
+}
+.canvascontainer{
+    position:relative;
+    font-size:0px;
+}
+.nameplayer{
+    position:absolute;
+    left:20px;
+    top:20px;
+    padding:10px;
+    font-size:35px;
+    color:white;
+    background:black;
+    
+}

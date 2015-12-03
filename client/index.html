@@ -1,0 +1,95 @@
+<!Doctype html>
+<html lang="en" ng-app>
+  <head>
+    <title>Chat Example</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/bootstrap-responsive.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+      body {
+        padding-top: 60px;
+      }
+    </style>
+    <script>
+      function ChatController($scope) {
+        var socket = io.connect();
+
+        $scope.messages = [];
+        $scope.players = [];
+        $scope.name = '';
+        $scope.text = '';
+
+        socket.on('connect', function () {
+          $scope.setName();
+          console.log("Hello ma gueule");
+          socket.emit("coucou","coucou");
+        });
+
+        socket.on('message', function (msg) {
+          $scope.messages.push(msg);
+          $scope.$apply();
+        });
+        
+        socket.on('listPlayers', function (players) {
+          $scope.players = players;
+          $scope.$apply();
+        });
+        
+        socket.on('startGame', function (msg) {
+          $("#mainContainer").hide();
+          var canvas = document.getElementById('canvasPlayer');
+          canvas.width = window.screen.width;
+          canvas.height = window.screen.height;
+          $("#canvasPlayer").toggle();
+        });
+        
+        // socket.on('players', function (players) {
+        //   $scope.roster = players;
+        //   $scope.$apply();
+        // });
+        
+        socket.on('newPlayer', function (players) {
+          $scope.players = players;
+          $scope.$apply();
+        });
+
+
+        $scope.send = function send() {
+          console.log('Sending myPseudo:', $scope.name);
+          socket.emit('givepseudo', $scope.name);
+          $('#formulaire').hide();
+        };
+      }
+    </script>
+  </head>
+  <body>
+    <div id="mainContainer" class="container" ng-controller="ChatController">
+      <div class="page-header">
+        <h1>Beesafe</h1>
+      </div>
+      <div class="row">
+        <div class="span3">
+          <ul class="nav nav-list well" id="listPlayers">
+            <li class="nav-header">Local Users</li>
+            <li ng-repeat="user in players">{{user.name}}</li>
+          </ul>
+        </div>
+        <div id="formulaire" class="span9">
+          <div class="row controls">
+            <form ng-submit="send()">
+              <div class="span2"><input type="text" class="input-block-level" ng-model="name" placeholder="Your Name"></div>
+                <!--<input type="text" class="span6" ng-model="text" placeholder="Message">-->
+                <input type="submit" class="btn btn-primary" value="Send" ng-disabled="!name">
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    <canvas id="canvasPlayer"></canvas>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/js/jquery.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/angular.min.js"></script>
+  </body>
+</html>

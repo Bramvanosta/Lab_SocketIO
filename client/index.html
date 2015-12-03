@@ -42,6 +42,9 @@
           canvas.width = window.screen.width;
           canvas.height = window.screen.height;
           $("#canvasPlayer").toggle();
+          $("#canvasPlayer").click(function(){
+            socket.emit("move",1);
+          })
         });
         
         // socket.on('players', function (players) {

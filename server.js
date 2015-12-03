@@ -49,6 +49,14 @@ io.on('connection', function (socket) {
          
       });
       
+      socket.on('move', function (plus) 
+      {
+        var play=getPlayer(socket.id);
+        play.position++;
+        socketScreen.emit('move',{id:play.id,pos:play.position});
+         
+      });
+      
       socket.on('givepseudo', function (name) 
       {
         var player = new Player(name, socket.id);
@@ -86,6 +94,15 @@ function removePlayer(idSocket){
   }
 }
 
+function getPlayer(idSocket){
+  for (var i =0; i< players.length; i++ ) 
+  {
+    if(players[i].id==idSocket){
+     return players[i];
+    }
+  }
+}
+
 server.listen(process.env.PORT || 3000, process.env.IP || "0.0.0.0", function(){
   var addr = server.address();
   console.log("Chat server listening at", addr.address + ":" + addr.port);
@@ -97,4 +114,5 @@ function Player(name,idsocket){
   this.name=name;
   this.id=idsocket;
   this.time=0;
+  this.position=0;
 }

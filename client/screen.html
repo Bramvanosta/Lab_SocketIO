@@ -29,6 +29,7 @@
         });
         
         socket.on('start', function (players) {
+            listPlayers=players;
           for(var x in players)
           {
               var divCanvas=document.createElement("div");
@@ -66,6 +67,18 @@
             listPlayers = players;
             console.log(players);
         });
+        
+         socket.on('move', function (logf) {
+            console.log(logf);
+            
+            var canvas=document.getElementById(logf.id);
+            console.log(canvas);
+            var ctx=canvas.getContext("2d");
+            ctx.clearRect(0,0,canvas.width,canvas.height);
+            ctx.fillRect(logf.pos,20,150,100);
+        });
+        
+        
 
       }
     </script>

@@ -2,7 +2,7 @@
 <html lang="en" ng-app>
   <head>
     <title>Chat Example</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, user-scalable=no">
     <link rel="stylesheet" href="/css/bootstrap.min.css">
     <link rel="stylesheet" href="/css/bootstrap-responsive.min.css">
     <link rel="stylesheet" href="/css/style.css">
@@ -38,14 +38,27 @@
         
         socket.on('startGame', function (msg) {
           $("#mainContainer").hide();
+          mainContainer.style.display="none";
           var canvas = document.getElementById('canvasPlayer');
           canvas.width = window.screen.width;
           canvas.height = window.screen.height;
           $("#canvasPlayer").toggle();
-          $("#canvasPlayer").click(function(){
-            socket.emit("move",1);
-          })
+          // $("#canvasPlayer").click(function(){
+          //   socket.emit("move",1);
+          // });
+          
+          canvasPlayer.addEventListener("touchstart", move, false);
+          
+          // $("#canvasPlayer").on("tap",function(){
+          //   socket.emit("move",1);
+          // }); 
+          
         });
+        
+        function move(){
+          console.log("move");
+          socket.emit("move",1);
+        }
         
         // socket.on('players', function (players) {
         //   $scope.roster = players;

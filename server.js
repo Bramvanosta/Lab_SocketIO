@@ -54,6 +54,10 @@ io.on('connection', function (socket) {
         var play=getPlayer(socket.id);
         play.position++;
         socketScreen.emit('move',{id:play.id,pos:play.position});
+        
+        if(play.position>=100){
+          socketScreen.emit('win',play.name);
+        }
          
       });
       

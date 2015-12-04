@@ -24,3 +24,7 @@ canvas{
     background:black;
     
 }
+html {
+-ms-touch-action: manipulation;
+touch-action: manipulation;
+}

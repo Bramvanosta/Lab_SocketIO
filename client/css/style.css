@@ -624,3 +624,8 @@ input, button {
     height: 100px;
     background-color: black;
 }
+
+.winners {
+    float: right;
+    font-size: 35px;
+}

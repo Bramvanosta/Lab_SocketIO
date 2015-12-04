@@ -2,11 +2,20 @@
 <html>
 <head>
     <title>Assassin Lab</title>
+    <link rel="stylesheet" href="css/style.css" type="text/css" />
 </head>
 <body>
 
-    <canvas width="616" height="556" id="mazecanvas">Can't load the maze game, because your browser doesn't support HTML5.</canvas>
-    <noscript>JavaScript is not enabled. To play the game, you should enable it.</noscript>
+    <canvas width="616" height="556" id="mazecanvas"></canvas>
+    <table class="winners">
+        <thead>
+            <tr>
+                <th>Victoires</th>
+            </tr>
+        </thead>
+        <tbody id="winnernames">
+        </tbody>
+    </table>
     
     <script src="/socket.io/socket.io.js"></script>
     <script>
@@ -24,7 +33,7 @@
         this.color =color;
         this.name =name;
         this.x=425;
-        this.y=3;
+        this.y=6;
         
         this.canMoveTo= function (destX, destY) {
             context.drawImage(mazeImg, 0, 0);
@@ -96,13 +105,20 @@
             }
             else if (movingAllowed === 2) { // 2 means 'the rectangle reached the end point'
                 
-            
-            console.log("bien jouer pd");
+            console.log(this.id);    
+            putInTableau(this);
+            // console.log("bien jouer pd");
 
             }
             
         }
         
+    }
+    function putInTableau(playWin){
+        var tr=document.createElement("tr");
+        tr.innerHTML=playWin.name;
+        winnernames.appendChild(tr);
+        removePlayer(playWin.id);
     }
     
     function getRandomColor() {
@@ -151,6 +167,7 @@
      return listPlayers[i];
     }
   }
+  return null;
 }
     function launchGame(){
         render();
@@ -173,7 +190,11 @@
         socket.on("move", function(infos) {
             var id=infos.id;
             var dir=infos.dir;
-            getPlayer(id).move(dir);
+            var current=getPlayer(id);
+            
+            if(current!=null)
+            current.move(dir);
+            
             render();
         });
         
@@ -185,6 +206,8 @@
     }
     
     function removePlayer(idSocket){
+    console.log(idSocket);
+    console.log(listPlayers);
       var indice=-1;
       for (var i =0; i< listPlayers.length; i++ ) 
       {
@@ -196,6 +219,8 @@
       if(indice!=-1){
         listPlayers.splice(indice,1);
       }
+      
+      console.log(listPlayers);
     }
     
     document.body.onload=function() {
@@ -207,28 +232,6 @@
 
         render();
         
-        document.onkeydown=function(e){
-            switch (e.keyCode) {
-                case 38:   // arrow up key
-                case 87: // W key
-                    j1.move("UP");
-                    break;
-                case 37: // arrow left key
-                case 65: // A key
-                    j1.move("LEFT");
-                    break;
-                case 40: // arrow down key
-                case 83: // S key
-                    j1.move("DOWN");
-                    break;
-                case 39: // arrow right key
-                case 68: // D key
-                    j1.move("RIGHT")
-                    break;
-            }
-            render();
-        };
-
     }
     </script>
 </body>

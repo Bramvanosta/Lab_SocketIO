@@ -38,6 +38,7 @@ io.on('connection', function (socket) {
       socket.on('disconnect', function () {
         // removePlayer(socket.id);
         // sockets.splice(sockets.indexOf(socket), 1);
+          socketLab.emit('removePlayer',socket.id);
       });
       
       socket.on('lab', function (name) 

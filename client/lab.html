@@ -18,12 +18,7 @@
     var listPlayers=[];
 
     var mazeImg = new Image();
-    // mazeImg.onload = function () {
-    //   launchGame();
-    // };
-    // mazeImg.src = "maze.gif";
-    
-    
+
     function Player(id,color){
         this.id=id;
         this.color =color;
@@ -55,13 +50,11 @@
         
         this.drawPlayer=function() 
         {
-            
             context.beginPath();
             context.rect(this.x,this.y, 15, 15);
             context.closePath();
             context.fillStyle = this.color;
             context.fill();
-
         }
         
         this.move=function(dir){
@@ -124,16 +117,14 @@
     
     function render(){
         makeWhite(0, 0, canvas.width, canvas.height);
-        // var mazeImg = new Image();
-        // mazeImg.onload = function () {
+
             context.drawImage(mazeImg, 0, 0);
             context.beginPath();
             context.arc(542, 122, 7, 0, 2 * Math.PI, false);
             context.closePath();
             context.fillStyle = '#00FF00';
             context.fill();
-        // };
-        // mazeImg.src = "maze.gif";
+
         for(var x in listPlayers)
         {
             listPlayers[x].drawPlayer();
@@ -168,10 +159,10 @@
         socket.on("newPlayer", function(player) {
             var p=new Player(player.id,player.col);
             listPlayers.push(p);
-            
-            // console.log(player);
+
             console.log("liste des joueurs");
             console.log(listPlayers);
+            render();
         });
         
         socket.on("move", function(infos) {
@@ -181,27 +172,34 @@
             render();
         });
         
+        socket.on("removePlayer", function(id) {
+            removePlayer(id);
+            render();
+        });
+        
+    }
+    
+    function removePlayer(idSocket){
+      var indice=-1;
+      for (var i =0; i< listPlayers.length; i++ ) 
+      {
+        if(listPlayers[i].id==idSocket){
+          indice=i;
+          break;
+        }
+      }
+      if(indice!=-1){
+        listPlayers.splice(indice,1);
+      }
     }
     
     document.body.onload=function() {
-        
-        // var socket = io.connect();
-        
-        // socket.on('connect',function(){
-        //   console.log("lab connected to server, wait players"); 
-        //   socket.emit('lab',"je suis lab");
-        // });
         
         mazeImg.onload = function () {
             launchGame();
         };
         mazeImg.src = "maze.gif";
-        // var j1=new Player(1);
-        // var j2=new Player(2);
-        
-        // listPlayers.push(j1);
-        // listPlayers.push(j2);
-        
+
         render();
         
         document.onkeydown=function(e){
@@ -225,8 +223,7 @@
             }
             render();
         };
-                
-        
+
     }
     </script>
 </body>

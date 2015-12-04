@@ -51,9 +51,9 @@ io.on('connection', function (socket) {
         socketLab.emit('move',infos);
       });
       
-      socket.on('newPlayer', function (n)
+      socket.on('newPlayer', function (colPlayer)
       {
-          socketLab.emit('newPlayer',socket.id);
+          socketLab.emit('newPlayer',{id:socket.id,col:colPlayer});
       });
       
       

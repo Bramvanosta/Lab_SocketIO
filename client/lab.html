@@ -1,16 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>HTML5 maze game</title>
+    <title>Assassin Lab</title>
 </head>
 <body>
-    <h2>HTML5 Maze Game</h2>
-    <p>
-        Welcome!<br />        
-        This is a HTML5 Maze Game created by <a href="http://www.codeproject.com/script/Membership/View.aspx?mid=8966127">ProgramFOX</a>.<br />
-        If you want to download the Maze, please go the the CodeProject article about this maze:
-        <a href="http://www.codeproject.com/Articles/577080/Create-an-HTML5-and-JavaScript-Maze-Game-with-a-timer">Create an HTML5 and JavaScript Maze Game with a timer</a>
-    </p>
+
     <canvas width="616" height="556" id="mazecanvas">Can't load the maze game, because your browser doesn't support HTML5.</canvas>
     <noscript>JavaScript is not enabled. To play the game, you should enable it.</noscript>
     
@@ -30,9 +24,9 @@
     // mazeImg.src = "maze.gif";
     
     
-    function Player(id){
+    function Player(id,color){
         this.id=id;
-        this.color = getRandomColor();
+        this.color =color;
         this.x=425;
         this.y=3;
         
@@ -172,7 +166,7 @@
         });
         
         socket.on("newPlayer", function(player) {
-            var p=new Player(player);
+            var p=new Player(player.id,player.col);
             listPlayers.push(p);
             
             // console.log(player);

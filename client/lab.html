@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>HTML5 maze game</title>
+</head>
+<body>
+    <h2>HTML5 Maze Game</h2>
+    <p>
+        Welcome!<br />        
+        This is a HTML5 Maze Game created by <a href="http://www.codeproject.com/script/Membership/View.aspx?mid=8966127">ProgramFOX</a>.<br />
+        If you want to download the Maze, please go the the CodeProject article about this maze:
+        <a href="http://www.codeproject.com/Articles/577080/Create-an-HTML5-and-JavaScript-Maze-Game-with-a-timer">Create an HTML5 and JavaScript Maze Game with a timer</a>
+    </p>
+    <canvas width="616" height="556" id="mazecanvas">Can't load the maze game, because your browser doesn't support HTML5.</canvas>
+    <noscript>JavaScript is not enabled. To play the game, you should enable it.</noscript>
+    
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+    
+    var canvas = document.getElementById("mazecanvas");
+    var context = canvas.getContext("2d");
+    var mazeWidth = 556;
+    var mazeHeight = 556;
+    var listPlayers=[];
+
+    var mazeImg = new Image();
+    // mazeImg.onload = function () {
+    //   launchGame();
+    // };
+    // mazeImg.src = "maze.gif";
+    
+    
+    function Player(id){
+        this.id=id;
+        this.color = getRandomColor();
+        this.x=425;
+        this.y=3;
+        
+        this.canMoveTo= function (destX, destY) {
+            context.drawImage(mazeImg, 0, 0);
+            var imgData = context.getImageData(destX, destY, 15, 15);
+            var data = imgData.data;
+            var canMove = 1; // 1 means: the rectangle can move
+            if (destX >= 0 && destX <= mazeWidth - 15 && destY >= 0 && destY <= mazeHeight - 15) {
+                for (var i = 0; i < 4 * 15 * 15; i += 4) {
+                    if (data[i] === 0 && data[i + 1] === 0 && data[i + 2] === 0) { // black
+                        canMove = 0; // 0 means: the rectangle can't move
+                        break;
+                    }
+                    else if (data[i] === 0 && data[i + 1] === 255 && data[i + 2] === 0) { // #00FF00
+                        canMove = 2; // 2 means: the end point is reached
+                        break;
+                    }
+                }
+            }
+            else {
+                canMove = 0;
+            }
+            return canMove;
+        }
+        
+        this.drawPlayer=function() 
+        {
+            
+            context.beginPath();
+            context.rect(this.x,this.y, 15, 15);
+            context.closePath();
+            context.fillStyle = this.color;
+            context.fill();
+
+        }
+        
+        this.move=function(dir){
+            var newX;
+            var newY;
+            var movingAllowed;
+            
+            if(dir=="UP"){
+                newX = this.x;
+                newY = this.y - 3;
+            }
+            else if(dir=="DOWN"){
+                newX = this.x;
+                newY = this.y + 3;
+            }
+            else if(dir=="LEFT"){
+                newX = this.x - 3;
+                newY = this.y;
+            } 
+            else if(dir=="RIGHT"){
+                newX = this.x + 3;
+                newY = this.y;
+            }
+            
+            var movingAllowed = this.canMoveTo(newX, newY);
+            if (movingAllowed === 1) {      // 1 means 'the rectangle can move'
+                //drawRectangle(newX, newY, "#0000FF");
+                this.x= newX;
+                this.y = newY;
+            }
+            else if (movingAllowed === 2) { // 2 means 'the rectangle reached the end point'
+
+                //makeWhite(0, 0, canvas.width, canvas.height);
+                // context.font = "40px Arial";
+                // context.fillStyle = "blue";
+                // context.textAlign = "center";
+                // context.textBaseline = "middle";
+                // context.fillText("Congratulations!", canvas.width / 2, canvas.height / 2);
+                // window.removeEventListener("keydown", moveRect, true);
+            }
+            
+        }
+        
+    }
+    
+    function getRandomColor() {
+            var letters = '0123456789ABCDEF'.split('');
+            var color = '#';
+            for (var i = 0; i < 6; i++ ) {
+                color += letters[Math.floor(Math.random() * 16)];
+            }
+            return color;
+        }
+    
+    function update(id, dir){
+        var player = getPlayer(id);
+        
+        player.move(dir);
+    }
+    
+    function render(){
+        makeWhite(0, 0, canvas.width, canvas.height);
+        // var mazeImg = new Image();
+        // mazeImg.onload = function () {
+            context.drawImage(mazeImg, 0, 0);
+            context.beginPath();
+            context.arc(542, 122, 7, 0, 2 * Math.PI, false);
+            context.closePath();
+            context.fillStyle = '#00FF00';
+            context.fill();
+        // };
+        // mazeImg.src = "maze.gif";
+        for(var x in listPlayers)
+        {
+            listPlayers[x].drawPlayer();
+        }
+    }
+    
+    function makeWhite(x, y, w, h) {
+            context.beginPath();
+            context.rect(x, y, w, h);
+            context.closePath();
+            context.fillStyle = "white";
+            context.fill();
+        }
+        
+ function getPlayer(idSocket){
+  for (var i =0; i< listPlayers.length; i++ ) 
+  {
+    if(listPlayers[i].id==idSocket){
+     return listPlayers[i];
+    }
+  }
+}
+    function launchGame(){
+        render();
+        var socket = io.connect();
+        
+        socket.on('connect',function(){
+           console.log("lab connected to server, wait players"); 
+           socket.emit('lab',"je suis lab");
+        });
+        
+        socket.on("newPlayer", function(player) {
+            var p=new Player(player);
+            listPlayers.push(p);
+            
+            // console.log(player);
+            console.log("liste des joueurs");
+            console.log(listPlayers);
+        });
+        
+        socket.on("move", function(infos) {
+            var id=infos.id;
+            var dir=infos.dir;
+            getPlayer(id).move(dir);
+            render();
+        });
+        
+    }
+    
+    document.body.onload=function() {
+        
+        // var socket = io.connect();
+        
+        // socket.on('connect',function(){
+        //   console.log("lab connected to server, wait players"); 
+        //   socket.emit('lab',"je suis lab");
+        // });
+        
+        mazeImg.onload = function () {
+            launchGame();
+        };
+        mazeImg.src = "maze.gif";
+        // var j1=new Player(1);
+        // var j2=new Player(2);
+        
+        // listPlayers.push(j1);
+        // listPlayers.push(j2);
+        
+        render();
+        
+        document.onkeydown=function(e){
+            switch (e.keyCode) {
+                case 38:   // arrow up key
+                case 87: // W key
+                    j1.move("UP");
+                    break;
+                case 37: // arrow left key
+                case 65: // A key
+                    j1.move("LEFT");
+                    break;
+                case 40: // arrow down key
+                case 83: // S key
+                    j1.move("DOWN");
+                    break;
+                case 39: // arrow right key
+                case 68: // D key
+                    j1.move("RIGHT")
+                    break;
+            }
+            render();
+        };
+                
+        
+    }
+    </script>
+</body>
+</html>

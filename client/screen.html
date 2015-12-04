@@ -14,42 +14,28 @@
       document.body.onload=function() {
         var socket = io.connect();
 
-        var listPlayers = [];
-
         socket.on('connect', function () {
-          console.log("Hello ma gueule");
+          console.log("Connected to server");
           socket.emit('screen',"je suis screen");
-        });
-
-        
-        socket.on('listPlayers', function (players) {
-         listPlayers = players;
-         console.log(players);
         });
         
         socket.on('start', function (players) {
-            listPlayers=players;
+          
           for(var x in players)
           {
-              var divCanvas=document.createElement("div");
-              divCanvas.className="canvascontainer";
-              
               var canvas=document.createElement("canvas");
               canvas.id=players[x].id;
               canvas.width=window.screen.width;
               canvas.height=window.screen.height/players.length;
               canvas.style.backgroundColor=getRandomColor();
+              canvascontainer.appendChild(canvas);
+              canvas=document.getElementById(players[x].id);
               
-              var namespan=document.createElement('span');
-              namespan.className="nameplayer";
-              
-              var textNode=document.createTextNode(players[x].name)
-              namespan.appendChild(textNode);
-              
-              divCanvas.appendChild(canvas);
-              divCanvas.appendChild(namespan);
-              
-              canvascontainer.appendChild(divCanvas);
+            var ctx=canvas.getContext("2d");
+            ctx.clearRect(0,0,canvas.width,canvas.height);
+            ctx.fillRect(players[x].position*(canvas.width/100),20,150,100);
+            ctx.font = "48px serif";
+            ctx.fillText(players[x].name, 10, 50);
           }
         });
         
@@ -61,22 +47,19 @@
             }
             return color;
         }
-        
-        socket.on('newPlayer', function (players) {
-            listPlayers = players;
-        });
-        
+
         socket.on('win', function (playerName) {
-            alert(playerName);
+            console.log(playerName);
         });
         
-         socket.on('move', function (logf) {
-            console.log(logf);
-            var canvas=document.getElementById(logf.id);
+         socket.on('move', function (play) {
+            var canvas=document.getElementById(play.id);
             var ctx=canvas.getContext("2d");
             ctx.clearRect(0,0,canvas.width,canvas.height);
+            ctx.fillRect(play.position*(canvas.width/100),20,150,100);
+            ctx.font = "48px serif";
+            ctx.fillText(play.name, 10, 50);
             
-            ctx.fillRect(logf.pos*(canvas.width/100),20,150,100);
         });
         
       }

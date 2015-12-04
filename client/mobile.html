@@ -1,0 +1,110 @@
+<!Doctype html>
+<html lang="en" ng-app>
+    <head>
+        <title>Chat Example</title>
+        <meta name="viewport" content="width=device-width, user-scalable=no">
+        <link rel="stylesheet" href="/css/style.css">
+        <script type="text/javascript" src="js/jquery.min.js"></script>
+    </head>
+    
+    <body>
+        <div id="frontGame">
+            <div class="cont">
+              <div class="demo">
+                <div class="login">
+                  <div class="login__check"></div>
+                  <div class="login__form">
+                    <div class="login__row">
+                      <input type="text" class="login__input name" value="player" placeholder="Username" id="myPseudo"/>
+                    </div>
+                    <button type="button" class="login__submit" onclick="send()">Jouer</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+        </div>
+        <div id="backGame">
+            <div id="btnA"></div>
+            <div id="btnB"></div>
+        </div>
+        <script src="/socket.io/socket.io.js"></script>
+        <script type="text/javascript">
+        var send;
+        document.body.onload=function() {
+          
+          var socket = io.connect();
+          var listPlayers=[];
+          
+          socket.on('connect', function () {
+          console.log("Connected to server");
+          
+          });
+
+        
+          socket.on('startGame', function (msg) {
+            loadButton();
+          });
+        
+        function loadButton(){
+            
+          $login.hide();
+          $login.addClass("inactive");
+          $('.login__submit').removeClass("success processing");
+          
+          frontGame.style.display = 'none';
+        
+          var size=window.screen.height/4;
+          size+="px";
+          btnA.style.width = size;
+          btnA.style.height = size;
+        
+          btnB.style.width = size;
+          btnB.style.height = size;
+
+          btnA.className="visible";
+          
+          btnA.addEventListener("touchstart", moveA, false);
+          btnB.addEventListener("touchstart", moveB, false);
+          
+          console.log(btnA);
+          console.log(btnB);
+        }
+        
+        function moveA(){
+          socket.emit("move",1);
+         
+          btnA.className="";
+          btnB.className="visible";
+        }
+        
+        function moveB(){
+          socket.emit("move",1);
+          btnA.className="visible";
+          btnB.className="";
+        }
+
+        socket.on('newPlayer', function (players) {
+          listPlayers = players;
+        });
+
+
+        send=function send() {
+          console.log('Sending myPseudo:',myPseudo.value);
+          socket.emit('givepseudo', myPseudo.value);
+        };
+          
+        }
+        
+        var animating = false,
+            $login = $(".login")
+      
+      
+        $(document).on("click", ".login__submit", function(e) {
+            if (animating) return;
+            animating = true;
+            var that = this;
+            $(that).addClass("processing");
+          });
+        </script>
+    </body>
+</html>

@@ -24,99 +24,48 @@ router.use(express.static(path.resolve(__dirname, 'client')));
 var messages = [];
 var sockets = [];
 var nbPlayers=0;
-var socketScreen;
+var socketLab;
 
 io.on('connection', function (socket) {
-    // messages.forEach(function (data) {
-    //   socket.emit('message', data);
-    // });
+
     
-    if(nbPlayers<4){
       
       sockets.push(socket);
       
       //socket.emit("newPlayer",players);
-      io.sockets.emit("newPlayer",players);
+      // io.sockets.emit("newPlayer",players);
       
       socket.on('disconnect', function () {
-        removePlayer(socket.id);
-        sockets.splice(sockets.indexOf(socket), 1);
+        // removePlayer(socket.id);
+        // sockets.splice(sockets.indexOf(socket), 1);
       });
       
-      socket.on('screen', function (name) 
+      socket.on('lab', function (name) 
       {
-        socketScreen=socket;
-         
+        socketLab=socket;
       });
       
-      socket.on('move', function (plus) 
+      socket.on('move', function (dirPlayer) 
       {
-        var play=getPlayer(socket.id);
-        play.position++;
-        socketScreen.emit('move',{id:play.id,pos:play.position});
-        
-        if(play.position>=100){
-          socketScreen.emit('win',play.name);
-        }
-         
+        var infos={id:socket.id,dir:dirPlayer}
+        socketLab.emit('move',infos);
       });
       
-      socket.on('givepseudo', function (name) 
+      socket.on('newPlayer', function (n)
       {
-        var player = new Player(name, socket.id);
-        players.push(player);
-        nbPlayers++;
-         
-          io.sockets.emit("newPlayer",players);
-          
-          if(nbPlayers==2)
-          {
-            io.sockets.emit("startGame","The game will begin");
-            socketScreen.emit("start",players);
-          }
-         
+          socketLab.emit('newPlayer',socket.id);
       });
+      
+      
     
-    }
+    
     
 
   });
 
 
 
-function removePlayer(idSocket){
-  var indice=-1;
-  for (var i =0; i< players.length; i++ ) 
-  {
-    if(players[i].id==idSocket){
-      indice=i;
-      break;
-    }
-  }
-  if(indice!=-1){
-    players.splice(indice,1);
-  }
-}
-
-function getPlayer(idSocket){
-  for (var i =0; i< players.length; i++ ) 
-  {
-    if(players[i].id==idSocket){
-     return players[i];
-    }
-  }
-}
-
 server.listen(process.env.PORT || 3000, process.env.IP || "0.0.0.0", function(){
   var addr = server.address();
   console.log("Chat server listening at", addr.address + ":" + addr.port);
 });
-
-var players=[];
-
-function Player(name,idsocket){
-  this.name=name;
-  this.id=idsocket;
-  this.time=0;
-  this.position=0;
-}

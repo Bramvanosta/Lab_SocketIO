@@ -39,32 +39,44 @@
         socket.on('startGame', function (msg) {
           $("#mainContainer").hide();
           mainContainer.style.display="none";
-          var canvas = document.getElementById('canvasPlayer');
-          canvas.width = window.screen.width;
-          canvas.height = window.screen.height;
-          $("#canvasPlayer").toggle();
-          // $("#canvasPlayer").click(function(){
-          //   socket.emit("move",1);
-          // });
           
-          canvasPlayer.addEventListener("touchstart", move, false);
+          loadButton();
           
-          // $("#canvasPlayer").on("tap",function(){
-          //   socket.emit("move",1);
-          // }); 
           
         });
         
-        function move(){
-          console.log("move");
-          socket.emit("move",1);
+        function loadButton(){
+        
+          var size=window.screen.height/4;
+          size+="px";
+          btnA.style.width = size;
+          btnA.style.height = size;
+        
+          btnB.style.width = size;
+          btnB.style.height = size;
+
+          btnA.className="visible";
+          
+          btnA.addEventListener("touchstart", moveA, false);
+          btnB.addEventListener("touchstart", moveB, false);
+          
+          console.log(btnA);
+          console.log(btnB);
         }
         
-        // socket.on('players', function (players) {
-        //   $scope.roster = players;
-        //   $scope.$apply();
-        // });
+        function moveA(){
+          socket.emit("move",1);
+         
+          btnA.className="";
+          btnB.className="visible";
+        }
         
+        function moveB(){
+          socket.emit("move",1);
+          btnA.className="visible";
+          btnB.className="";
+        }
+
         socket.on('newPlayer', function (players) {
           $scope.players = players;
           $scope.$apply();
@@ -102,7 +114,8 @@
         </div>
       </div>
     </div>
-    <canvas id="canvasPlayer"></canvas>
+    <div id="btnA">A</div>
+    <div id="btnB">B</div>
     <script src="/socket.io/socket.io.js"></script>
     <script src="/js/jquery.min.js"></script>
     <script src="/js/bootstrap.min.js"></script>

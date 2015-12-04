@@ -1,0 +1,112 @@
+<!Doctype html>
+<html lang="en" ng-app>
+    <head>
+        <title>Chat Example</title>
+        <meta name="viewport" content="width=device-width, user-scalable=no">
+        <link rel="stylesheet" href="/css/style.css">
+        <script type="text/javascript" src="js/jquery.min.js"></script>
+    </head>
+    
+    <body id="mobile_lab">
+        <div id="backGame">
+            <div id="UP" class="directionButton" onclick="move(this)"></div>
+            <div id="LEFT" class="directionButton" onclick="move(this)"></div>
+            <div id="RIGHT" class="directionButton" onclick="move(this)"></div>
+            <div id="DOWN" class="directionButton" onclick="move(this)"></div>
+        </div>
+        <script src="/socket.io/socket.io.js"></script>
+        <script type="text/javascript">
+        var send;
+        var move;
+       
+        
+        document.body.onload=function() {
+          
+          var socket = io.connect();
+          var listPlayers=[];
+          
+          socket.on('connect', function () {
+            console.log("Connected to server");
+            socket.emit("newPlayer", "A new Player");
+          });
+
+        
+          socket.on('startGame', function (msg) {
+            loadButton();
+          });
+          
+           move=function move(btn){
+              socket.emit("move", btn.id);
+              console.log(btn.id);
+          };
+        
+        
+        
+        function loadButton(){
+            
+          $login.hide();
+          $login.addClass("inactive");
+          $('.login__submit').removeClass("success processing");
+          
+          frontGame.style.display = 'none';
+        
+          var size=window.screen.height/4;
+          size+="px";
+          //btnA.style.width = size;
+          //btnA.style.height = size;
+        
+          //btnB.style.width = size;
+          //btnB.style.height = size;
+
+          //btnA.className="visible";
+          
+          function move(btn){
+              socket.emit("move", btn.id);
+              console.log(btn.id);
+          };
+          
+          //btnA.addEventListener("touchstart", moveA, false);
+          //btnB.addEventListener("touchstart", moveB, false);
+          
+          //console.log(btnA);
+          //console.log(btnB);
+        }
+        
+        //function moveA(){
+        //  socket.emit("move",1);
+        // 
+        //  btnA.className="";
+        //  btnB.className="visible";
+        //}
+        
+        //function moveB(){
+        //  socket.emit("move",1);
+        //  btnA.className="visible";
+        //  btnB.className="";
+        //}
+
+        //socket.on('newPlayer', function (players) {
+        //  listPlayers = players;
+        //});
+
+
+        // send=function send() {
+        //   console.log('Sending myPseudo:',myPseudo.value);
+        //   socket.emit('givepseudo', myPseudo.value);
+        // };
+          
+        }
+        
+        var animating = false,
+            $login = $(".login")
+      
+      
+        $(document).on("click", ".login__submit", function(e) {
+            if (animating) return;
+            animating = true;
+            var that = this;
+            $(that).addClass("processing");
+          });
+        </script>
+    </body>
+</html>

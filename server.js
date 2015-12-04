@@ -52,9 +52,9 @@ io.on('connection', function (socket) {
         socketLab.emit('move',infos);
       });
       
-      socket.on('newPlayer', function (colPlayer)
+      socket.on('newPlayer', function (infosPlayer)
       {
-          socketLab.emit('newPlayer',{id:socket.id,col:colPlayer});
+          socketLab.emit('newPlayer',{id:socket.id,col:infosPlayer.col,name:infosPlayer.name});
       });
       
       

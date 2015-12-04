@@ -27,6 +27,12 @@
         
         this.canMoveTo= function (destX, destY) {
             context.drawImage(mazeImg, 0, 0);
+            context.drawImage(mazeImg, 0, 0);
+            context.beginPath();
+            context.arc(542, 122, 7, 0, 2 * Math.PI, false);
+            context.closePath();
+            context.fillStyle = '#00FF00';
+            context.fill();
             var imgData = context.getImageData(destX, destY, 15, 15);
             var data = imgData.data;
             var canMove = 1; // 1 means: the rectangle can move
@@ -86,7 +92,9 @@
                 this.y = newY;
             }
             else if (movingAllowed === 2) { // 2 means 'the rectangle reached the end point'
-
+                
+            
+            console.log("bien jouer pd");
                 //makeWhite(0, 0, canvas.width, canvas.height);
                 // context.font = "40px Arial";
                 // context.fillStyle = "blue";

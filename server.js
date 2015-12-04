@@ -28,27 +28,22 @@ var socketLab;
 
 io.on('connection', function (socket) {
 
-    
-      
       sockets.push(socket);
-      
-      //socket.emit("newPlayer",players);
-      // io.sockets.emit("newPlayer",players);
-      
+   
       socket.on('disconnect', function () {
-        // removePlayer(socket.id);
-        // sockets.splice(sockets.indexOf(socket), 1);
+        
           socketLab.emit('removePlayer',socket.id);
+      
       });
       
       socket.on('lab', function (name) 
       {
-        socketLab=socket;
+          socketLab=socket;
       });
       
       socket.on('move', function (dirPlayer) 
       {
-        var infos={id:socket.id,dir:dirPlayer}
+        var infos={id:socket.id,dir:dirPlayer};
         socketLab.emit('move',infos);
       });
       
@@ -57,11 +52,6 @@ io.on('connection', function (socket) {
           socketLab.emit('newPlayer',{id:socket.id,col:infosPlayer.col,name:infosPlayer.name});
       });
       
-      
-    
-    
-    
-
   });
 
 

@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Assassin Lab</title>
+    <title>Assassin Script Labyrinthe</title>
     <link rel="stylesheet" href="css/style.css" type="text/css" />
 </head>
 <body>
 
-    <canvas width="616" height="556" id="mazecanvas"></canvas>
+    <canvas width="616" height="556" id="canvas"></canvas>
     <table class="winners">
         <thead>
             <tr>
@@ -20,14 +20,23 @@
     <script src="/socket.io/socket.io.js"></script>
     <script>
     
-    var canvas = document.getElementById("mazecanvas");
+    var canvas = document.getElementById("canvas");
     var context = canvas.getContext("2d");
     var mazeWidth = 556;
     var mazeHeight = 556;
     var listPlayers=[];
 
     var mazeImg = new Image();
-
+    
+    function drawBackground(){
+        context.drawImage(mazeImg, 0, 0);
+        context.beginPath();
+        context.arc(542, 122, 7, 0, 2 * Math.PI, false);
+        context.closePath();
+        context.fillStyle = '#00FF00';
+        context.fill();
+    }
+    
     function Player(id,color,name){
         this.id=id;
         this.color =color;
@@ -36,13 +45,9 @@
         this.y=6;
         
         this.canMoveTo= function (destX, destY) {
-            context.drawImage(mazeImg, 0, 0);
-            context.drawImage(mazeImg, 0, 0);
-            context.beginPath();
-            context.arc(542, 122, 7, 0, 2 * Math.PI, false);
-            context.closePath();
-            context.fillStyle = '#00FF00';
-            context.fill();
+            
+            drawBackground();
+            
             var imgData = context.getImageData(destX, destY, 15, 15);
             var data = imgData.data;
             var canMove = 1; // 1 means: the rectangle can move
@@ -105,16 +110,13 @@
             }
             else if (movingAllowed === 2) { // 2 means 'the rectangle reached the end point'
                 
-            console.log(this.id);    
-            putInTableau(this);
-            // console.log("bien jouer pd");
+                putInTableau(this);
 
             }
-            
         }
-        
     }
-    function putInTableau(playWin){
+    function putInTableau(playWin)
+    {
         var tr=document.createElement("tr");
         tr.innerHTML=playWin.name;
         winnernames.appendChild(tr);
@@ -138,13 +140,7 @@
     
     function render(){
         makeWhite(0, 0, canvas.width, canvas.height);
-
-            context.drawImage(mazeImg, 0, 0);
-            context.beginPath();
-            context.arc(542, 122, 7, 0, 2 * Math.PI, false);
-            context.closePath();
-            context.fillStyle = '#00FF00';
-            context.fill();
+        drawBackground();
 
         for(var x in listPlayers)
         {
@@ -153,22 +149,22 @@
     }
     
     function makeWhite(x, y, w, h) {
-            context.beginPath();
-            context.rect(x, y, w, h);
-            context.closePath();
-            context.fillStyle = "white";
-            context.fill();
-        }
-        
- function getPlayer(idSocket){
-  for (var i =0; i< listPlayers.length; i++ ) 
-  {
-    if(listPlayers[i].id==idSocket){
-     return listPlayers[i];
+        context.beginPath();
+        context.rect(x, y, w, h);
+        context.closePath();
+        context.fillStyle = "white";
+        context.fill();
     }
-  }
-  return null;
-}
+        
+    function getPlayer(idSocket){
+      for (var i =0; i< listPlayers.length; i++ ) 
+      {
+        if(listPlayers[i].id==idSocket){
+         return listPlayers[i];
+        }
+      }
+      return null;
+    }
     function launchGame(){
         render();
         var socket = io.connect();
@@ -205,9 +201,8 @@
         
     }
     
-    function removePlayer(idSocket){
-    console.log(idSocket);
-    console.log(listPlayers);
+    function removePlayer(idSocket)
+    {
       var indice=-1;
       for (var i =0; i< listPlayers.length; i++ ) 
       {
@@ -219,8 +214,6 @@
       if(indice!=-1){
         listPlayers.splice(indice,1);
       }
-      
-      console.log(listPlayers);
     }
     
     document.body.onload=function() {
@@ -231,7 +224,6 @@
         mazeImg.src = "maze.gif";
 
         render();
-        
     }
     </script>
 </body>

@@ -52,6 +52,7 @@ io.on('connection', function (socket) {
           socketLab.emit('newPlayer',{id:socket.id,col:infosPlayer.col,name:infosPlayer.name});
       });
       
+    
   });
 
 

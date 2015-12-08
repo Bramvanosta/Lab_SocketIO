@@ -49,12 +49,20 @@
             $(".directionButton").bind('touchstart', function() {
                 move($(this).attr('id'));
             });
+            
+            $(".directionButton").bind('touchend', function() {
+                move("STOP");
+            });
           } 
             else 
             {
-               $('.directionButton').on('click', function() {
+               $('.directionButton').on('mousedown', function() {
                    move($(this).attr('id'));
-               }) ;
+               });
+               
+               $('.directionButton').on('mouseup', function() {
+                   move("STOP");
+               });
             }
             
           var animating = false,
